@@ -21,7 +21,7 @@ Alternatively using docker-compose:
 ```
 version: '2'
 services:
-    web:
+    october:
         image: "oldskool73/octobercms"
         ports:
             - "80:80"
@@ -44,7 +44,7 @@ Cons:
 This image also allows for a CLI install. The CLI install runs `php artisan october:env` to place common settings into the environment, so you can overwrite them from the Docker environment.
 
 ```shell
-$ docker run -e "INSTALL_TYPE=cli" -e "DB_CONNECTION=sqlite" -e "DB_DATABASE=storage/database.sqlite" -p80:80 oldskool73/octobercms:latest
+$ docker run -d --name october -e "INSTALL_TYPE=cli" -e "DB_CONNECTION=sqlite" -e "DB_DATABASE=storage/database.sqlite" -p80:80 oldskool73/octobercms:latest
 ```
 
 Alternatively using docker-compose:
@@ -52,7 +52,7 @@ Alternatively using docker-compose:
 ```
 version: '2'
 services:
-    web:
+    october:
         image: "oldskool73/octobercms"
         ports:
             - "80:80"
@@ -70,7 +70,7 @@ Pros :
 
 Cons :
 
-* More complex to set up than the `wizard` install. (see `Seeding the database` and `Seesing an admin user` below)
+* More complex to set up than the `wizard` install. (see `Seeding the database` and `Seeding an admin user` below)
 
 ### No Install
 
@@ -79,13 +79,13 @@ If you already have an October CMS project ready to go, and just want to use thi
 Also, once you have set up the `wizard` or `cli` versions, you should probably change to using the `none` version also to avoid the slight delay copying files at startup, and prevent any of your files being replaced or overwritten by accident.
 
 ```shell
-$ docker run -d -e "INSTALL_TYPE=none" -p80:80 -v `pwd`/october:/var/www/html --name october oldskool73/octobercms:latest
+$ docker run -d --name october -e "OCTOBER_INSTALL_TYPE=none" -p80:80 -v `pwd`/october:/var/www/html --name october oldskool73/octobercms:latest
 ```
 
 ```
 version: '2'
 services:
-    web:
+    october:
         image: "oldskool73/octobercms"
         ports:
             - "80:80"
@@ -104,13 +104,13 @@ services:
 To persist your data, map a local folder to the `var/www/html` volume on the container.
 
 ```shell
-$ docker run -d -p80:80 -v `pwd`/october:/var/www/html --name october oldskool73/octobercms:latest
+$ docker run -d --name october -p80:80 -v `pwd`/october:/var/www/html oldskool73/octobercms:latest
 ```
 
 ```
 version: '2'
 services:
-    web:
+    october:
         image: "oldskool73/octobercms"
         ports:
             - "80:80"
@@ -129,7 +129,7 @@ To connect to other services you should probably use the CLI Install method, and
 ```
 version: '2'
 services:
-    web:
+    october:
         image: "oldskool73/octobercms"
         ports:
             - "80"
