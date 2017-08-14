@@ -48,16 +48,25 @@ VOLUME /var/www/html
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
   && /usr/local/bin/composer global require hirak/prestissimo
 
-#RUN cd /usr/src && git clone https://github.com/octobercms/october.git
-
 ENV OCTOBERCMS_TAG v1.0.420
 ENV OCTOBERCMS_CHECKSUM 13f7b11b2f062025697e5a93f5bc4dcb109daa07
 ENV OCTOBERCMS_CORE_BUILD 420
 ENV OCTOBERCMS_CORE_HASH 9c5af2e2c04126ed4fd4039c20d8bbb3
 
 # Get October CMS src
-RUN cd /usr/src && curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
-  && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c -
+RUN cd /usr/src \
+  && curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
+  && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
+  && mkdir -p /usr/src/octobercms \
+  && tar -xzf /usr/src/octobercms.tar.gz -C /usr/src/octobercms --strip 1 \
+  && rm octobercms.tar.gz \
+  && cd /usr/src/octobercms \
+  && composer require --no-update --prefer-dist predis/predis \
+  && composer install --no-interaction --prefer-dist --no-scripts \
+  && php artisan october:env
+
+# Get October CMS installer
+RUN cd /usr/src && curl -o octobercms.install.tar.gz -fSL https://codeload.github.com/octobercms/install/legacy.tar.gz/master
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
